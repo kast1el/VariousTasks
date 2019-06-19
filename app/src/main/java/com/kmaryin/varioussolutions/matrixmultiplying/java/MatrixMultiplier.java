@@ -57,7 +57,7 @@ public class MatrixMultiplier {
     }
 
     public void multiplyAsync() {
-        new AsyncMultipleExecutor(m1, m2, asyncResult, l, m, n).multiply(THREADS_COUNT);
+        new AsyncMultiplyingExecutor(m1, m2, asyncResult, l, m, n).multiply(THREADS_COUNT);
     }
 
     @Override

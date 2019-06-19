@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
  * Created by konstantinmaryin on 2019-06-18.
  * All rights reserved
  */
-public class AsyncMultipleExecutor {
+public class AsyncMultiplyingExecutor {
     private final int[][] m1, m2, result;
     private final int l, m, n;
 
@@ -18,7 +18,7 @@ public class AsyncMultipleExecutor {
 
     private final Object locker = new Object();
 
-    public AsyncMultipleExecutor(int[][] m1, int[][] m2, int[][] result, int l, int m, int n) {
+    public AsyncMultiplyingExecutor(int[][] m1, int[][] m2, int[][] result, int l, int m, int n) {
         this.m1 = m1;
         this.m2 = m2;
         this.result = result;
@@ -50,30 +50,33 @@ public class AsyncMultipleExecutor {
     private class MultiplyingTask implements Runnable {
         @Override
         public void run() {
-            int currentRow;
-            int currentColumn;
 
-            synchronized (locker) {
-                if (column == n - 1) {
-                    currentRow = row++;
-                    currentColumn = column = 0;
-                } else {
-                    currentRow = row;
+            while(true) {
+                int currentRow;
+                int currentColumn;
+
+                synchronized (locker) {
+                    if (column == n) {
+                        currentRow = ++row;
+                        column = 0;
+                    } else {
+                        currentRow = row;
+                    }
                     currentColumn = column++;
+
+                    if (currentRow == l) {
+                        // Finish
+                        break;
+                    }
                 }
 
-                if (currentRow == l - 1 && currentColumn == n) {
-                    // Finish
-                    return;
+                int res = 0;
+                for (int i = 0; i < m; ++i) {
+                    res += m1[currentRow][i] * m2[i][currentColumn];
                 }
-            }
 
-            int res = 0;
-            for (int i = 0; i < m; ++i) {
-                res += m1[currentRow][i] + m2[i][currentColumn];
+                result[currentRow][currentColumn] = res;
             }
-
-            result[currentRow][currentColumn] = res;
         }
     }
 }
